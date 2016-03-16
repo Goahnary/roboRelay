@@ -1,18 +1,20 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-	<title>Robo Car</title>
-	<link rel="stylesheet" href="/css/bootstrap.min.css">
-	<link rel="stylesheet" href="/css/bootstrap-theme.min.css">
-	<script type="javascript/text" src="/js/bootstrap.min.js"></script>
-	<style>
-		#home-pic{
-			height: 400px;
-		}
-	</style>
+  <title>Robo Car</title>
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/bootstrap-theme.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script type="javascript/text" src="/js/bootstrap.min.js"></script>
+
+  <style>
+    #home-pic{
+      width: 100%;
+    }
+  </style>
 </head>
 <body>
-	<!-- Fixed navbar -->
+  <!-- Fixed navbar -->
     <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container">
         <div class="navbar-header">
@@ -27,22 +29,23 @@
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
             <li class="active"><a href="/index.html">Home</a></li>
-            <li> <a href="#help" data-toggle="collapse">Help</a></li> <!-- Should allow help to be toggled -->
+            <li> <a href="#Help" data-toggle="collapse">Help</a></li> <!-- Should allow help to be toggled -->
           </ul>
         </div><!--/.nav-collapse -->
 
 
       </div>
     </nav>
-	
-	<p style="padding-top: 55px;">
-		<img id="home-pic" src="/images/robocar/Raspberry_Pi_B+_top.jpg">
-	</p>
+  
+     <div class="container" role="main">
+        <p style="padding-top: 55px;"> 
+          <img id="home-pic" src="/images/robocar/carview.jpg">
+        
+         <div id="Help" class = "collapse"> <!-- Should have this be hidden until help is pressed -->
+           Help text shown here
+          </div>
 
-  <div id="help" class = "collapse"> <!-- Should have this be hidden until help is pressed -->
-    Help text shown here
-  </div>
-	
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        </p> 
+      </div>
 </body>
 </html
