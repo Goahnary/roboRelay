@@ -19,7 +19,7 @@ carSock.listen(10)
 threads = []
 inputQueue = []
 
-# Semaphore to cotrol access to shared resource inputQueue
+# Semaphore to control access to shared resource inputQueue
 sem = threading.Semaphore()
 
 
@@ -33,36 +33,43 @@ def communicateWithClient(c, addr):
 	return
 
 # Send data from the input queue to the car
-# todo needs to handle disconnects
 def communicateWithCar():
 
 	while(1):
-		#wait for car to connect
+		# Wait for car to connect
 		c, addr = carSock.accept()
+		isConnected = True
+		print('Car connected')
 
 		# While car is connected, if input queue is not empty send input to car
-		while(1):
+		while(isConnected):
 			if(len(inputQueue) > 0):
+				sem.acquire()
 				try:
-					sem.acquire()
 					c.send(inputQueue[0])
 					inputQueue.pop(0)
-					sem.release()
 				except socket.error, e:
-					print 'Socket error: '+ e + '\nClosing connection'
-					c.close()
-					return
+					print 'Socket error: Car disconnected'
+					isConnected = False
+				sem.release()
+					
 		c.close()
-		return
+
+# def signal_handler(signal, frame):
+# 	for t in threads:
+# 		print 'k'
+# 		t.exit()
+# 	print('Shutting down server')
+# 	sys.exit(0)
 
 
-
-
+# Start car communication thread
 signal.signal(signal.SIGINT, signal_handler)
 t = threading.Thread(target=communicateWithCar)
 threads.append(t)
 t.start()
-# wait for a clients to connect
+
+# Wait for a clients to connect
 while 1:
 	conn, addr = s.accept()
 	print('Connection received')
