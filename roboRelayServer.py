@@ -18,18 +18,25 @@ carSock.listen(10)
 
 threads = []
 inputQueue = []
+carIsConnected = False
+validInput = ['w','a','s','d']
 
-# Semaphore to control access to shared resource inputQueue
-sem = threading.Semaphore()
+# Semaphores to control access to shared resources inputQueue and carIsConnected
+inputSem = threading.Semaphore()
+carConnectionSem = threading.Semaphore()
 
 
 # Receive data from client and put it in the input queue
+# todo: send comformation message(is car connected)?
 def communicateWithClient(c, addr):
 	r = c.recv(32)
-	sem.acquire()
-	inputQueue.append(r)
-	sem.release()
+	carConnectionSem.acquire()
+	if (carIsConnected and r in validInput):
+		inputSem.acquire()
+		inputQueue.append(r)
+		inputSem.release()
 	c.close()
+	carConnectionSem.release()
 	return
 
 # Send data from the input queue to the car
@@ -39,19 +46,29 @@ def communicateWithCar():
 		# Wait for car to connect
 		c, addr = carSock.accept()
 		isConnected = True
+		global carIsConnected
+		carConnectionSem.acquire()
+		carIsConnected = True
+		carConnectionSem.release()
+		
 		print('Car connected')
 
 		# While car is connected, if input queue is not empty send input to car
 		while(isConnected):
 			if(len(inputQueue) > 0):
-				sem.acquire()
+				inputSem.acquire()
 				try:
 					c.send(inputQueue[0])
 					inputQueue.pop(0)
 				except socket.error, e:
 					print 'Socket error: Car disconnected'
 					isConnected = False
-				sem.release()
+					carConnectionSem.acquire()
+					carIsConnected = False
+					carConnectionSem.release()
+					# Clear input queue
+					del inputQueue[:]
+				inputSem.release()
 					
 		c.close()
 
@@ -64,7 +81,7 @@ def communicateWithCar():
 
 
 # Start car communication thread
-signal.signal(signal.SIGINT, signal_handler)
+# signal.signal(signal.SIGINT, signal_handler)
 t = threading.Thread(target=communicateWithCar)
 threads.append(t)
 t.start()
