@@ -3,17 +3,21 @@
 <head>
   <title>Robo Car</title>
 
+  <script type="text/javascript" src="js/webSocket.js"></script>
+
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
  
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
   
+  
   <style>
     #home-pic{
       width: 100%;
     }
   </style>
+
 </head>
 <body>
   <!-- Fixed navbar -->
@@ -41,7 +45,8 @@
   
      <div class="container" role="main">
         <p style="padding-top: 55px;"> 
-          <img id="home-pic" src="images/carview.jpg">
+          <!--<img id="home-pic" src="images/carview.jpg"> -->
+          <a href="javascript:WebSocket();">Click Here </a>
        
          <div id="Help" class = "collapse"> <!-- Should have this be hidden until help is pressed -->
            
