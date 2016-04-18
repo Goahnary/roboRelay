@@ -1,15 +1,15 @@
 #!/usr/bin/env python
+
+# websocket server must be installed
+# Install using the following command: pip install websocket-server
+
 import socket
 import threading
 import signal
+from websocket_server import WebsocketServer
 
-clientPort = 5454
-carPort = 4545
-
-s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-s.bind(('', clientPort))
-s.listen(10)
+clientPort = 8008
+carPort = 1337
 
 carSock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 carSock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -19,27 +19,34 @@ carSock.listen(10)
 threads = []
 inputQueue = []
 carIsConnected = False
-validInput = ['w','a','s','d']
+validInput = ['FORWARD', 'LEFT', 'RIGHT', 'BACKWARD', 'STOP', 'DISCONNECT']
 
 # Semaphores to control access to shared resources inputQueue and carIsConnected
 inputSem = threading.Semaphore()
 carConnectionSem = threading.Semaphore()
 
 
+def onClientConnection(client, server):
+	print('Client connected')
+
+def onClientDisconnection(client, server):
+	print('Client disconnected')
+
 # Receive data from client and put it in the input queue
 # todo: send comformation message(is car connected)?
-def communicateWithClient(c, addr):
-	r = c.recv(32)
+def communicateWithClient(client, server, msg):
+	print('recv: ' + msg)
 	carConnectionSem.acquire()
-	if (carIsConnected and r in validInput):
+	if (carIsConnected and msg in validInput):
 		inputSem.acquire()
-		inputQueue.append(r)
+		inputQueue.append(msg)
 		inputSem.release()
-	c.close()
 	carConnectionSem.release()
-	return
 
-# Send data from the input queue to the car
+websocket = WebsocketServer(clientPort)
+websocket.set_fn_message_received(communicateWithClient)
+
+# Handle car communications
 def communicateWithCar():
 
 	while(1):
@@ -72,24 +79,12 @@ def communicateWithCar():
 					
 		c.close()
 
-# def signal_handler(signal, frame):
-# 	for t in threads:
-# 		print 'k'
-# 		t.exit()
-# 	print('Shutting down server')
-# 	sys.exit(0)
-
 
 # Start car communication thread
-# signal.signal(signal.SIGINT, signal_handler)
 t = threading.Thread(target=communicateWithCar)
 threads.append(t)
 t.start()
+print 'Listening on port', carPort, 'for car'
 
 # Wait for a clients to connect
-while 1:
-	conn, addr = s.accept()
-	print('Connection received')
-	t = threading.Thread(target=communicateWithClient, args=(conn, addr))
-	threads.append(t)
-	t.start()
+websocket.run_forever()
