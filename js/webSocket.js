@@ -41,9 +41,8 @@ function connectWebSocket()
             
          }
 
-function sendToServer(){
-   alert("jdkfng");
+function sendToServer(msg){
    if(conn != null){
-      conn.send("FORWARD");
+      conn.send(msg);
    }
 }
