@@ -1,15 +1,17 @@
-function WebSocket()
+var conn;
+
+function connectWebSocket()
          {
             if ("WebSocket" in window)
             {
                        
                // Let us open a web socket
-               var conn = new WebSocket("ws://localhost:8008/echo");
+               conn = new WebSocket("ws://localhost:8008/");
 				
                conn.onopen = function()
                {
                   // Web Socket is connected, send data using send()
-                  ws.send("Message to send");
+                  conn.send("Message to send");
                   alert("Message is sent...");
                };
 				
@@ -29,11 +31,19 @@ function WebSocket()
                   //error with the websocket
                   alert(event.data);
                }
-            }
+             }
             
             else
             {
                // The browser doesn't support WebSocket
                alert("WebSockets are not supported in your Browser. Please use a different one.");
             }
+            
          }
+
+function sendToServer(){
+   alert("jdkfng");
+   if(conn != null){
+      conn.send("FORWARD");
+   }
+}
