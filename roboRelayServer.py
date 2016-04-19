@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 
-# websocket server must be installed
+# roboRelayServer
+# https://github.com/Goahnary/roboRelay
+# Socket server to act as middleman and pass commands from the client to the car
+# Requires: websocket server
 # Install using the following command: pip install websocket-server
 
 import socket
 import threading
-import signal
 from websocket_server import WebsocketServer
 
 clientPort = 8008
@@ -33,7 +35,6 @@ def onClientDisconnection(client, server):
 	print('Client disconnected')
 
 # Receive data from client and put it in the input queue
-# todo: send comformation message(is car connected)?
 def communicateWithClient(client, server, msg):
 	print('recv: ' + msg)
 	carConnectionSem.acquire()
@@ -43,6 +44,7 @@ def communicateWithClient(client, server, msg):
 		inputSem.release()
 	carConnectionSem.release()
 
+# Websocket to talk to client
 websocket = WebsocketServer(clientPort)
 websocket.set_fn_message_received(communicateWithClient)
 
@@ -60,7 +62,7 @@ def communicateWithCar():
 		
 		print('Car connected')
 
-		# While car is connected, if input queue is not empty send input to car
+		# While car is connected: if input queue is not empty, send input to car
 		while(isConnected):
 			if(len(inputQueue) > 0):
 				inputSem.acquire()
@@ -86,5 +88,5 @@ threads.append(t)
 t.start()
 print 'Listening on port', carPort, 'for car'
 
-# Wait for a clients to connect
+# Start websocket to communicate with client
 websocket.run_forever()
