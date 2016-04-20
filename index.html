@@ -4,6 +4,7 @@
   <title>Robo Car</title>
 
   <script type="text/javascript" src="js/webSocket.js"></script>
+  <script type="text/javascript" src="js/keycodes.js"></script>
 
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
@@ -12,11 +13,6 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 
   <script type="text/javascript">
-    var keyCodes = {};
-    keyCodes[119] = "FORWARD";
-    keyCodes[97] = "LEFT";
-    keyCodes[100] = "RIGHT";
-    keyCodes[115] = "BACKWARD";
  
     $(document).keypress(function(e){
       if(e.which in keyCodes){
