@@ -11,8 +11,7 @@ function connectWebSocket()
                conn.onopen = function()
                {
                   // Web Socket is connected, send data using send()
-                  conn.send("Message to send");
-                  alert("Message is sent...");
+                  conn.send("Connected");
                };
 				
                conn.onmessage = function (evt) 
@@ -29,7 +28,7 @@ function connectWebSocket()
 
                conn.onerror = function(event){
                   //error with the websocket
-                  alert(event.data);
+                  alert("Unable to connect to Server. Please Try again");
                }
              }
             

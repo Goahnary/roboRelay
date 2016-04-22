@@ -16,7 +16,8 @@
  
     $(document).keypress(function(e){
       if(e.which in keyCodes){
-        sendToServer(keyCodes[e.which]);
+        alert(keyCodes[e.which]);
+        //sendToServer(keyCodes[e.which]);
       }
     });
 
