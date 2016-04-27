@@ -12,7 +12,7 @@ import signal
 import sys
 from websocket_server import WebsocketServer
 
-clientPort = 8008
+clientPort = 8009
 carPort = 1337
 
 carSock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)

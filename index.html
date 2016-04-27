@@ -1,84 +1,176 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-  <title>Robo Car</title>
+	<title>Robo Car</title>
 
-  <script type="text/javascript" src="js/webSocket.js"></script>
-  <script type="text/javascript" src="js/keycodes.js"></script>
+	<script type="text/javascript" src="js/webSocket.js"></script>
+	<script type="text/javascript" src="js/keycodes.js"></script>
 
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
  
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 
-  <script type="text/javascript">
+	<script type="text/javascript">
  
-    $(document).keypress(function(e){
-      if(e.which in keyCodes){
-        //alert(keyCodes[e.which]);
-        sendToServer(keyCodes[e.which]);
-      }
-    });
+		$(document).keypress(function(e){
+			if(e.which in keyCodes){
+				//alert(keyCodes[e.which]);
+				sendToServer(keyCodes[e.which]);
+			}
+		});
 
-  </script>>
-  
-  
-  <style>
-    #home-pic{
-      width: 100%;
-    }
-  </style>
+	</script>
+	<script type="text/javascript">
+		var time = new Date();
+		var interval = 1000;
+		var oldTime = new Date();
+
+		function WebSocketTest()
+		{
+			console.log("WebSocketTest");
+			if ("WebSocket" in window)
+			{
+				console.log("socket in window");
+				 
+				 
+				// Let us open a web socket
+				var ws = new WebSocket("ws://wkuacm.org:8008");
+					
+				console.log("ws created");
+
+				ws.onopen = function()
+				{
+					console.log("ws opened");
+					// Web Socket is connected, send data using send()
+					ws.send("Initiate Stream");
+					//alert("Message is sent...");
+				};
+			
+				ws.onmessage = function (evt) 
+				{ 
+					console.log("message received");
+					time = new Date();
+					console.log(time.getTime());
+					if (time.getTime() - oldTime.getTime() > interval) {
+						oldTime = new Date();
+						console.log('PASS');
+						var received_blob = evt.data;
+						//alert("Message is received..."+received_blob);
+						var img = new Image();
+						img.onload = function (e) {
+							console.log("PNG Loaded");
+							window.URL.revokeObjectURL(img.src);
+							img = null;  
+						};
+
+						img.onerror = img.onabort = function () {         
+							img = null;
+						};
+						img.src = window.URL.createObjectURL(received_blob);
+						document.getElementById("img-here-old").innerHTML = "<img style='height:100%; width: 100%;' src='"+img.src+"'>"
+
+					} else {
+						console.log("message NOT received");
+						var received_blob = evt.data;
+						//alert("Message is received..."+received_blob);
+						var img = new Image();
+						img.onload = function (e) {
+							console.log("PNG Loaded");
+							window.URL.revokeObjectURL(img.src);    
+							img = null;  
+						};
+
+						img.onerror = img.onabort = function () {         
+							img = null;
+						};
+						img.src = window.URL.createObjectURL(received_blob);
+						document.getElementById("img-here").innerHTML = "<img style='height:100%; width: 100%;' src='"+img.src+"'>"
+					}
+				};
+			
+				ws.onclose = function()
+				{ 
+					// websocket is closed.
+					alert("Connection is closed..."); 
+				};
+
+			}
+
+			else 
+
+			{
+				// The browser doesn't support WebSocket
+				alert("WebSocket NOT supported by your Browser!");
+			}
+		 }
+
+		//window.onload = function(){
+		//	WebSocketTest();
+		}
+	</script>
+	<style>
+		#home-pic{
+			width: 100%;
+		}
+
+		.video-feed {
+			position: fixed;
+			padding-top: 100px;
+			width: 960px;
+			height: 720px;
+		}
+	</style>
 
 </head>
 <body>
-  <!-- Fixed navbar -->
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="index.html">Robo Car Control</a>
-        </div>
-        <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
-            <li class="active"><a href="index.html">Home</a></li>
-            <li> <a href="#Help" data-toggle="collapse">Help</a></li> <!-- Should allow help to be toggled -->
-          </ul>
-        </div><!--/.nav-collapse -->
+	<!-- Fixed navbar -->
+		<nav class="navbar navbar-inverse navbar-fixed-top">
+			<div class="container">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="index.html">Robo Car Control</a>
+				</div>
+				<div id="navbar" class="navbar-collapse collapse">
+					<ul class="nav navbar-nav">
+						<li class="active"><a href="index.html">Home</a></li>
+						<li> <a href="#Help" data-toggle="collapse">Help</a></li> <!-- Should allow help to be toggled -->
+					</ul>
+				</div><!--/.nav-collapse -->
 
 
-      </div>
-    </nav>
-  
-     <div class="container" role="main">
-        <p style="padding-top: 55px;"> 
-          <!--<img id="home-pic" src="images/carview.jpg"> -->
-          <a href="javascript:connectWebSocket();">Connect</a>
-          
-       
-         <div id="Help" class = "collapse"> <!-- Should have this be hidden until help is pressed -->
-           
-           <ul class="helpDirections">
-              <li> <img id="wKey" src ="images/w key.png" alt="W"> - Forward </li>
-              <li> <img id="aKey" src ="images/a key.png" alt="A"> - Left </li>
-              <li> <img id="sKey" src ="images/s key.png" alt="S"> - Reverse </li>
-              <li> <img id="dKey" src ="images/d key.png" alt="D"> - Right </li>
-           </ul>
-          </div>
+			</div>
+		</nav>
+	
+		 <div class="container" role="main">
+		 	<div id="img-here" class="video-feed">
+		 		
+		 	</div>
+		 	<div id="img-here-old" class="video-feed">
+		 		
+		 	</div>
+				<p style="padding-top: 55px;"> 
+					<!--<img id="home-pic" src="images/carview.jpg"> -->
+					<a href="javascript:connectWebSocket();">Connect</a>
+					
+			 
+				 <div id="Help" class = "collapse"> <!-- Should have this be hidden until help is pressed -->
+					 
+					 <ul class="helpDirections">
+							<li> <img id="wKey" src ="images/w key.png" alt="W"> - Forward </li>
+							<li> <img id="aKey" src ="images/a key.png" alt="A"> - Left </li>
+							<li> <img id="sKey" src ="images/s key.png" alt="S"> - Reverse </li>
+							<li> <img id="dKey" src ="images/d key.png" alt="D"> - Right </li>
+					 </ul>
+					</div>
 
-        </p> 
-      </div>
-
- 
-
-<!-- Test Code -->
-  
-  <!-- end -->
-
-</body>
-</html
+				</p> 
+			</div>
+	</body>
+</html>
