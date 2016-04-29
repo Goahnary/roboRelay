@@ -6,7 +6,7 @@ function connectWebSocket()
             {
                        
                // Let us open a web socket
-               conn = new WebSocket("ws://localhost:8008/");
+               conn = new WebSocket("ws://161.6.10.64:8008/");
 				
                conn.onopen = function()
                {
