@@ -22,6 +22,7 @@ carSock.listen(10)
 threads = []
 inputQueue = []
 carIsConnected = False
+clientIsConnected = False
 runServer = True
 validInput = ['MOVE FORWARD', 'MOVE LEFT', 'MOVE RIGHT', 'MOVE BACKWARD', "ACTION STOP"]
 
@@ -31,9 +32,13 @@ carConnectionSem = threading.Semaphore()
 
 
 def onClientConnection(client, server):
+	global clientIsConnected
+	clientIsConnected = True
 	print('Client connected')
 
 def onClientDisconnection(client, server):
+	global clientIsConnected
+	clientIsConnected = False
 	# Send car diconnect message
 	carConnectionSem.acquire()
 	if (carIsConnected):
@@ -73,12 +78,26 @@ def communicateWithCar():
 		
 		print('Car connected')
 
+		# Receive CONNECT CAR from car
+		r = c.recv(128)
+		# Notify car of the clients connection status
+		# Once client has also connected begin communication
+		if(not clientIsConnected):
+			c.send("CONTROL DISCONNECTED\r\n")
+
+			while(not clientIsConnected and runServer):
+				r = c.recv(128)
+				if(r == "CONTROL STATUS\r\n"):
+					c.send("CONTROL DISCONNECTED\r\n")
+
+		c.send("CONTROL CONNECTED\r\n")
+
 		# While car is connected: if input queue is not empty, send input to car
 		while(isConnected and runServer):
 			if(len(inputQueue) > 0):
 				inputSem.acquire()
 				try:
-					c.send(inputQueue[0])
+					c.send(inputQueue[0]+"\r\n")
 					inputQueue.pop(0)
 				except socket.error, e:
 					print 'Socket error: Car disconnected'
