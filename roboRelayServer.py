@@ -3,8 +3,7 @@
 # roboRelayServer
 # https://github.com/Goahnary/roboRelay
 # Socket server to act as middleman and pass commands from the client to the car
-# Requires: websocket server
-# Install using the following command: pip install websocket-server
+# Requires: websocket_server.py
 
 import socket
 import threading
@@ -24,7 +23,7 @@ threads = []
 inputQueue = []
 carIsConnected = False
 runServer = True
-validInput = ['FORWARD', 'LEFT', 'RIGHT', 'BACKWARD', 'STOP', 'DISCONNECT']
+validInput = ['MOVE FORWARD', 'MOVE LEFT', 'MOVE RIGHT', 'MOVE BACKWARD', "ACTION STOP"]
 
 # Semaphores to control access to shared resources inputQueue and carIsConnected
 inputSem = threading.Semaphore()
@@ -35,6 +34,13 @@ def onClientConnection(client, server):
 	print('Client connected')
 
 def onClientDisconnection(client, server):
+	# Send car diconnect message
+	carConnectionSem.acquire()
+	if (carIsConnected):
+		inputSem.acquire()
+		inputQueue.append('ACTION DISCONNECT')
+		inputSem.release()
+	carConnectionSem.release()
 	print('Client disconnected')
 
 # Receive data from client and put it in the input queue
