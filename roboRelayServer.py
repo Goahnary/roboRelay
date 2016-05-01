@@ -24,7 +24,7 @@ inputQueue = []
 carIsConnected = False
 clientIsConnected = False
 runServer = True
-validInput = ['MOVE FORWARD', 'MOVE LEFT', 'MOVE RIGHT', 'MOVE BACKWARD', "ACTION STOP"]
+validInput = ["MOVE FORWARD", "MOVE LEFT", "MOVE RIGHT", "MOVE BACKWARD", "ACTION STOP"]
 
 # Semaphores to control access to shared resources inputQueue and carIsConnected
 inputSem = threading.Semaphore()
@@ -88,7 +88,14 @@ def communicateWithCar():
 			while(not clientIsConnected and runServer):
 				r = c.recv(128)
 				if(r == "CONTROL STATUS\r\n"):
-					c.send("CONTROL DISCONNECTED\r\n")
+					try:
+						c.send("CONTROL DISCONNECTED\r\n")
+					except socket.error, e:
+						print 'Socket error: Car disconnected'
+						isConnected = False
+						carConnectionSem.acquire()
+						carIsConnected = False
+						carConnectionSem.release()
 
 		c.send("CONTROL CONNECTED\r\n")
 
